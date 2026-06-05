@@ -36,26 +36,33 @@ export default function Register(props) {
   return (
     <View style={styles.container}>
         <View style={styles.containerForm}>
+            
           <Text>Formulario Registro</Text>
+
           <Text style={styles.texto}>Ingrese su Email</Text>
+
           <TextInput style={styles.inputStyle}
            keyboardType="email-address"
             placeholder="email"
             onChangeText={text => setEmail(text)}
             value={email}></TextInput>
           <Text style={styles.texto}>Ingrese su Username</Text>
+
           <TextInput style={styles.inputStyle}
            keyboardType="default"
             placeholder="Nombre de usuario"
             onChangeText={text => setUsername(text)}
             value={username}></TextInput>
+
           <Text style={styles.texto}>Ingrese su Password</Text>
+
           <TextInput style={styles.inputStyle}
            keyboardType="default"
              placeholder="Password"
              secureTextEntry={true}
              onChangeText={text => setPassword(text)}
              value={password}></TextInput>
+
           <Pressable style={styles.clickeableForm} onPress={() => onSubmit(email, username, password)}><Text style={styles.textoBoton}>Registrarse</Text></Pressable>
         </View>
 
