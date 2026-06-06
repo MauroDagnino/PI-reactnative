@@ -1,126 +1,129 @@
 import { useState } from "react"
-import { View, Text, TextInput, Pressable, StyleSheet, FlatList, Image} from "react-native"
-import { auth, db} from "../../firebase/config"
-import Login from "../Login/Login"
+import { View, Text, TextInput, Pressable, StyleSheet } from "react-native"
+import { auth, db } from "../../firebase/config"
 
 export default function Register(props) {
 
   const [email, setEmail] = useState("")
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [register, setRegister] = useState(false)
   const [registerError, setRegisterError] = useState("")
 
   function onSubmit(email, userName, password) {
-        auth.createUserWithEmailAndPassword(email, password)
-        .then(response => {
-            db.collection("user").add({
-                email: email,
-                nombreUsuario: userName,
-                createdAt: Date.now()
-            })
-        
+    auth.createUserWithEmailAndPassword(email, password)
+      .then(response => {
+        db.collection("users").add({
+          email: email,
+          nombreUsuario: userName,
+          createdAt: Date.now()
         })
-        .then(response=>{
-            props.navigation.navigate("Login")
-        })
-        .catch(error => {
-            setRegisterError("Hay un fallo en el registro")
-            console.log(error)
-        })
-
-        
-    }
-
+      })
+      .then(response => {
+        props.navigation.navigate("Login")
+      })
+      .catch(error => {
+        setRegisterError(error.message)
+        console.log(error)
+      })
+  }
 
   return (
     <View style={styles.container}>
-        <View style={styles.containerForm}>
-            
-          <Text>Formulario Registro</Text>
+      <Text style={styles.title}>Crear cuenta</Text>
+      <Text style={styles.subtitle}>Completá tus datos para registrarte</Text>
 
-          <Text style={styles.texto}>Ingrese su Email</Text>
+      <TextInput
+        style={styles.input}
+        keyboardType="email-address"
+        placeholder="Email"
+        placeholderTextColor="#999"
+        onChangeText={text => setEmail(text)}
+        value={email}
+      />
+      <TextInput
+        style={styles.input}
+        keyboardType="default"
+        placeholder="Nombre de usuario"
+        placeholderTextColor="#999"
+        onChangeText={text => setUsername(text)}
+        value={username}
+      />
+      <TextInput
+        style={styles.input}
+        keyboardType="default"
+        placeholder="Contraseña"
+        placeholderTextColor="#999"
+        secureTextEntry={true}
+        onChangeText={text => setPassword(text)}
+        value={password}
+      />
 
-          <TextInput style={styles.inputStyle}
-           keyboardType="email-address"
-            placeholder="email"
-            onChangeText={text => setEmail(text)}
-            value={email}></TextInput>
-          <Text style={styles.texto}>Ingrese su Username</Text>
+      {registerError ? <Text style={styles.error}>{registerError}</Text> : null}
 
-          <TextInput style={styles.inputStyle}
-           keyboardType="default"
-            placeholder="Nombre de usuario"
-            onChangeText={text => setUsername(text)}
-            value={username}></TextInput>
+      <Pressable style={styles.button} onPress={() => onSubmit(email, username, password)}>
+        <Text style={styles.buttonText}>Registrarse</Text>
+      </Pressable>
 
-          <Text style={styles.texto}>Ingrese su Password</Text>
-
-          <TextInput style={styles.inputStyle}
-           keyboardType="default"
-             placeholder="Password"
-             secureTextEntry={true}
-             onChangeText={text => setPassword(text)}
-             value={password}></TextInput>
-
-          <Pressable style={styles.clickeableForm} onPress={() => onSubmit(email, username, password)}><Text style={styles.textoBoton}>Registrarse</Text></Pressable>
-        </View>
-
-        <Text>Ya tenes cuenta?</Text>
-        <Pressable style={styles.clickeable} onPress={() => props.navigation.navigate("Login")}><Text style={styles.texto}>Ir al Login</Text></Pressable>
-
-
+      <Pressable onPress={() => props.navigation.navigate("Login")}>
+        <Text style={styles.link}>¿Ya tenés cuenta? Iniciá sesión</Text>
+      </Pressable>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-
-    container: {
-        flex: 1,
-        justifyContent: "center",
-        paddingHorizontal: 20,
-        backgroundColor: "#fff"
-    },
-
-    containerForm: {
-        paddingHorizontal: 10,
-        marginTop: 20
-    },
-
-    texto: {
-        fontWeight: "bold",
-        textAlign: "center"
-    },
-
-    inputStyle: {
-        height: 20,
-        paddingVertical: 15,
-        paddingHorizontal: 10,
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderStyle: "solid",
-        borderRadius: 6,
-        marginVertical: 10
-    },
-
-    clickeableForm: {
-        backgroundColor: "#28a745",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-        alignItems: "center",
-        borderRadius: 4,
-        borderWidth: 1,
-        borderColor: "#28a745"
-    },
-
-    textoBoton: {
-        color: "#fff"
-    },
-
-    clickeable: {
-        marginTop: 10,
-        alignItems: "center",
-    }
-
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 28,
+    backgroundColor: "#f5f5f5"
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 6,
+    color: "#1a1a1a"
+  },
+  subtitle: {
+    fontSize: 14,
+    textAlign: "center",
+    color: "#666",
+    marginBottom: 24
+  },
+  input: {
+    backgroundColor: "#fff",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    marginBottom: 14,
+    fontSize: 15,
+    color: "#1a1a1a"
+  },
+  button: {
+    backgroundColor: "#28a745",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 4,
+    marginBottom: 20
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16
+  },
+  link: {
+    textAlign: "center",
+    color: "#28a745",
+    fontWeight: "bold",
+    fontSize: 14
+  },
+  error: {
+    color: "red",
+    textAlign: "center",
+    marginBottom: 10
+  }
 })
