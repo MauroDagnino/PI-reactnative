@@ -9,16 +9,16 @@ export default function Register(props) {
   const [password, setPassword] = useState("")
   const [registerError, setRegisterError] = useState("")
 
-  function onSubmit(email, userName, password) {
+  function onSubmit() {
     auth.createUserWithEmailAndPassword(email, password)
-      .then(response => {
+      .then(res => {
         db.collection("users").add({
           email: email,
           nombreUsuario: userName,
           createdAt: Date.now()
         })
       })
-      .then(response => {
+      .then(res => {
         props.navigation.navigate("Login")
       })
       .catch(error => {
@@ -76,19 +76,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 28,
-    backgroundColor: "#f5f5f5"
+    backgroundColor: "#eef0fb"
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 6,
-    color: "#1a1a1a"
+    color: "#2d2b6b"
   },
   subtitle: {
     fontSize: 14,
     textAlign: "center",
-    color: "#666",
+    color: "#6b6aaa",
     marginBottom: 24
   },
   input: {
@@ -97,13 +97,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#b3b8e8",
     marginBottom: 14,
     fontSize: 15,
-    color: "#1a1a1a"
+    color: "#2d2b6b"
   },
   button: {
-    backgroundColor: "#28a745",
+    backgroundColor: "#4f46e5",
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",
@@ -117,12 +117,12 @@ const styles = StyleSheet.create({
   },
   link: {
     textAlign: "center",
-    color: "#28a745",
+    color: "#4f46e5",
     fontWeight: "bold",
     fontSize: 14
   },
   error: {
-    color: "red",
+    color: "#dc2626",
     textAlign: "center",
     marginBottom: 10
   }

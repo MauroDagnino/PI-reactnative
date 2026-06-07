@@ -10,8 +10,8 @@ function Login(props) {
   const [loginError, setLoginError] = useState("")
 
   function onSubmit(email, password) {
-    if (password.length < 8) {
-      setLoginError("La contraseña debe tener al menos 8 caracteres")
+    if (password.length < 6) {
+      setLoginError("La contraseña debe tener al menos 6 caracteres")
       return
     }
     auth.signInWithEmailAndPassword(email, password)
@@ -57,6 +57,10 @@ function Login(props) {
       <Pressable onPress={() => props.navigation.navigate("Register")}>
         <Text style={styles.link}>¿No tenés cuenta? Registrate</Text>
       </Pressable>
+
+       <Pressable onPress={() => props.navigation.navigate("HomeMenu")}>
+        <Text style={styles.link}>Ir al menu</Text>
+      </Pressable>
     </View>
   )
 }
@@ -64,7 +68,7 @@ function Login(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#eef0fb",
     paddingHorizontal: 28,
     justifyContent: "center",
   },
@@ -73,12 +77,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 6,
-    color: "#1a1a1a"
+    color: "#2d2b6b"
   },
   subtitle: {
     fontSize: 14,
     textAlign: "center",
-    color: "#666",
+    color: "#6b6aaa",
     marginBottom: 24
   },
   input: {
@@ -87,13 +91,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#b3b8e8",
     marginBottom: 14,
     fontSize: 15,
-    color: "#1a1a1a"
+    color: "#2d2b6b"
   },
   button: {
-    backgroundColor: "#28a745",
+    backgroundColor: "#4f46e5",
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",
@@ -107,12 +111,12 @@ const styles = StyleSheet.create({
   },
   link: {
     textAlign: "center",
-    color: "#28a745",
+    color: "#4f46e5",
     fontWeight: "bold",
     fontSize: 14
   },
   error: {
-    color: "red",
+    color: "#dc2626",
     textAlign: "center",
     marginBottom: 10
   }
