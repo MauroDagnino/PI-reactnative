@@ -9,7 +9,7 @@ export default function Register(props) {
   const [password, setPassword] = useState("")
   const [registerError, setRegisterError] = useState("")
 
-  function onSubmit() {
+  function onSubmit(email, userName, password) {
     auth.createUserWithEmailAndPassword(email, password)
       .then(res => {
         db.collection("users").add({

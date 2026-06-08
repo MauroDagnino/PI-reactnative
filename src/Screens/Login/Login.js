@@ -15,7 +15,7 @@ function Login(props) {
       return
     }
     auth.signInWithEmailAndPassword(email, password)
-      .then(response => {
+      .then(res => {
         setLogin(true)
         props.navigation.navigate("HomeMenu")
       })
