@@ -1,5 +1,5 @@
-import { View, Text, FlatList, Image, Pressable, StyleSheet } from "react-native";
-import { useState, useEffect } from "react";
+import { View, Text, FlatList, Image, Pressable, StyleSheet, ActivityIndicator } from "react-native";
+import { useState, useEffect, Activity } from "react";
 import { auth, db } from "../../firebase/config";
 import firebase from "firebase";
 
@@ -39,14 +39,20 @@ export default function Home({ navigation }) {
             console.log("Like actualizado");
         })
 }
-
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <ActivityIndicator size="large" color="black" />
+            </View>
+        );
+    }
     return (
-    <View>
+    <View style={styles.flatlist}>
     <Text style={styles.title}>Página de Inicio</Text>
     <FlatList
         data={posts}
         keyExtractor={item => item.id}
-        contentContainerStyle={styles.container}
+        style={styles.container}
         renderItem={({ item }) => {
             const liked = (item.data.likes || []).includes(user.email);
             return (
@@ -83,6 +89,10 @@ const styles = StyleSheet.create({
     container: {
         padding: 16,
         backgroundColor: "#f0f0f0",
+    },
+    flatlist: {
+        width: "100%",
+        flex: 1
     },
     title: {
         fontSize: 24,

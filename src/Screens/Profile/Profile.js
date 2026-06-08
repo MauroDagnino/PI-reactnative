@@ -1,14 +1,50 @@
-import { Pressable, View, Text, StyleSheet } from "react-native";
-import { auth } from "../../firebase/config";
+import { Pressable, View, Text, StyleSheet, FlatList } from "react-native";
+import { auth, db } from "../../firebase/config";
+import { useEffect, useState } from "react";
 
 export default function Profile({ navigation }) {
     const user = auth.currentUser;
+    const [posts, setPosts] = useState([]);
+
+    useEffect(() => {
+        db.collection("posts")
+        .where("owner", "==", user.email)
+        .orderBy("owner", 'desc')
+        .onSnapshot(docs => {
+            let myPosts = [];
+            docs.forEach(doc => {
+                myPosts.push({
+                    id: doc.id,
+                    data: doc.data()
+                });
+                setPosts(myPosts);
+            });
+        })
+    }, [])
+
     return (
         <View style={styles.container}>
-            <View style={styles.center}>
+            
                 <Text style={styles.title}>Mi Perfil</Text>
+                <Text style={styles.subtitle}>{user.displayName || user.email}</Text>
                 <Text style={styles.subtitle}>{user.email}</Text>
-            </View>
+                <Text style={styles.sectionTitle}>Últimos posteos:</Text>
+                <FlatList
+                    data={posts}
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => (
+                        <View style={styles.post}>
+                            <Text style={styles.postOwner}>{item.data.owner}</Text>
+                            <Text style={styles.postDescription}>{item.data.description}</Text>
+                            <Pressable
+                                style={styles.deleteBtn}
+                                onPress={() => deletePost(item.id)}>
+                                <Text style={styles.deleteBtnText}>Eliminar</Text>
+                            </Pressable>
+                        </View>
+                    )}
+                />
+            
             <Pressable
                     style={styles.button}
                     onPress={() => navigation.navigate("Login")}>
@@ -21,12 +57,23 @@ export default function Profile({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+container: {
     flex: 1,
-    paddingHorizontal: 28,
+    paddingHorizontal: 20,
     paddingVertical: 30,
     backgroundColor: "#f0f0f0",
     justifyContent: "space-between",
+    alignItems: "flex-start"
+},
+title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 12,
+},
+sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
 },
 center: {
     flex: 1,
@@ -38,19 +85,39 @@ center: {
     alignItems: "center",
     justifyContent: "center"
 },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 8,
-    color: "#1a1a2e"
-  },
   subtitle: {
     fontSize: 14,
-    textAlign: "center",
     color: "#6b6aaa",
-    marginBottom: 4
+    marginBottom: 16
+},
+  post: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+},
+  postOwner: {
+    fontSize: 12,
+    color: "#888",
+    marginBottom: 4,
+},
+  postDescription: {
+    fontSize: 14,
+    marginBottom: 8
   },
+  deleteBtn: {
+    backgroundColor: "#ffb3ba",
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    alignSelf: "flex-end"
+  },
+  deleteBtnText: {
+    fontSize: 13,
+    color: "#333"
+  }, 
   button: {
     backgroundColor: "#4f46e5",
     paddingVertical: 10,
@@ -63,6 +130,6 @@ center: {
   buttonText: {
     color: "#e1e1e1ff",
     fontWeight: "bold",
-    fontSize: 14
+    fontSize: 16
   }
 })
