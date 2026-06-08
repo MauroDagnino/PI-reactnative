@@ -1,24 +1,139 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, FlatList, Image, Pressable, StyleSheet } from "react-native";
+import { useState, useEffect } from "react";
+import { auth, db } from "../../firebase/config";
+import firebase from "firebase";
 
-export default function Home() {
+export default function Home({ navigation }) {
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const user = auth.currentUser;
+
+    useEffect(() => {
+        db.collection("posts")
+            .orderBy("createdAt", "desc")
+            .onSnapshot(docs => {
+                    let posts = [];
+                    docs.forEach(doc => {
+                        posts.push({
+                        id: doc.id,
+                        data: doc.data()
+                    })
+                })
+                setPosts(posts);
+                setLoading(false);
+            })
+    }, []);
+
+    const toggleLike = (post) => {
+    const likes = post.data.likes || [];
+    const alreadyLiked = likes.includes(user.email);
+
+    db.collection('posts')
+        .doc(post.id)
+        .update({
+            likes: alreadyLiked
+                ? firebase.firestore.FieldValue.arrayRemove(user.email)
+                : firebase.firestore.FieldValue.arrayUnion(user.email)
+        })
+        .then(() => {
+            console.log("Like actualizado");
+        })
+}
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Pantalla de Inicio</Text>
-        </View>
-    );
+    <View>
+    <Text style={styles.title}>Página de Inicio</Text>
+    <FlatList
+        data={posts}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.container}
+        renderItem={({ item }) => {
+            const liked = (item.data.likes || []).includes(user.email);
+            return (
+                <View style={styles.post}>
+                    <Text style={styles.owner}>
+                        {item.data.owner} posteó el {new Date(item.data.createdAt).toLocaleDateString()}
+                    </Text>
+                    <Text style={styles.description}>{item.data.description}</Text>
+                    {item.data.imageUrl ? (
+                        <Image source={{ uri: item.data.imageUrl }} style={styles.image} />
+                    ) : null}
+                    <View style={styles.actions}>
+                        <Pressable onPress={() => toggleLike(item)} style={styles.likeBtn}>
+                            <Text style={styles.likeText}>
+                                {liked ? "❤️" : "🤍"} {(item.data.likes || []).length} likes
+                            </Text>
+                        </Pressable>
+                        <Pressable
+                            onPress={() => navigation.navigate("Comments", { postId: item.id })}
+                            style={styles.commentBtn}>
+                            <Text style={styles.commentText}>Comentar</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            );
+        }}
+    />
+    </View>
+); 
 }
 
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: "#f0f0f0",
         padding: 16,
-        justifyContent: "center",
+        backgroundColor: "#f0f0f0",
     },
     title: {
-        fontSize: 26,
+        fontSize: 24,
         fontWeight: "bold",
-        marginBottom: 16,
-    }
+        margin: 12,
+    },
+    post: {
+        backgroundColor: "#fff",
+        borderRadius: 12,
+        padding: 14,
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: "#ddd",
+    },
+    owner: {
+        fontSize: 12,
+        color: "#888",
+        marginBottom: 6,
+    },
+    description: {
+        fontSize: 16,
+        marginBottom: 10,
+        color: "#222",
+    },
+    image: {
+        width: "100%",
+        height: 200,
+        borderRadius: 8,
+        marginBottom: 10,
+    },
+    actions: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    likeBtn: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    likeText: {
+        fontSize: 14,
+        color: "#555",
+    },
+    commentBtn: {
+        backgroundColor: "#add8e6",
+        paddingHorizontal: 16,
+        paddingVertical: 6,
+        borderRadius: 8,
+    },
+    commentText: {
+        fontSize: 14,
+        color: "#333",
+    },
 });
