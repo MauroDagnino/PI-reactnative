@@ -60,7 +60,7 @@ export default function Home({ navigation }) {
                     <Text style={styles.owner}>
                         {item.data.owner} posteó el {new Date(item.data.createdAt).toLocaleDateString()}
                     </Text>
-                    <Text style={styles.description}>{item.data.description}</Text>
+                    <Text style={styles.description}>{item.data.descripcionPost}</Text>
                     {item.data.imageUrl ? (
                         <Image source={{ uri: item.data.imageUrl }} style={styles.image} />
                     ) : null}

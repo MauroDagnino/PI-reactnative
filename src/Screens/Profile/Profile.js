@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 export default function Profile({ navigation }) {
     const user = auth.currentUser;
     const [posts, setPosts] = useState([]);
+    const [username, setUsername] = useState("");
 
     useEffect(() => {
         db.collection("posts")
         .where("owner", "==", user.email)
-        .orderBy("owner", 'desc')
         .onSnapshot(docs => {
             let myPosts = [];
             docs.forEach(doc => {
@@ -17,16 +17,37 @@ export default function Profile({ navigation }) {
                     id: doc.id,
                     data: doc.data()
                 });
-                setPosts(myPosts);
             });
+            setPosts(myPosts);
         })
+
+        db.collection("user")
+        .where("email", "==", user.email)
+        .get()
+        .then(snapshot => {
+            if (!snapshot.empty) {
+                setUsername(snapshot.docs[0].data().nombreUsuario);
+            }
+        });
+    
     }, [])
+    const deletePost = (id) => {
+        db.collection("posts")
+            .doc(id)
+            .delete()
+            .then(() => {
+                console.log("Post eliminado");
+            })
+            .catch(error => {
+                console.error("Error al eliminar el post:", error);
+            });
+    }
 
     return (
         <View style={styles.container}>
             
                 <Text style={styles.title}>Mi Perfil</Text>
-                <Text style={styles.subtitle}>{user.displayName || user.email}</Text>
+                <Text style={styles.title}>{username}</Text>
                 <Text style={styles.subtitle}>{user.email}</Text>
                 <Text style={styles.sectionTitle}>Últimos posteos:</Text>
                 <FlatList
@@ -34,8 +55,8 @@ export default function Profile({ navigation }) {
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => (
                         <View style={styles.post}>
-                            <Text style={styles.postOwner}>{item.data.owner}</Text>
-                            <Text style={styles.postDescription}>{item.data.description}</Text>
+                            <Text style={styles.postOwner}>{username} posteo en {new Date(item.data.createdAt).toLocaleDateString()}</Text>
+                            <Text style={styles.postDescription}>{item.data.descripcionPost}</Text>
                             <Pressable
                                 style={styles.deleteBtn}
                                 onPress={() => deletePost(item.id)}>
@@ -105,7 +126,8 @@ center: {
 },
   postDescription: {
     fontSize: 14,
-    marginBottom: 8
+    marginTop: 8,
+    marginBottom: 10
   },
   deleteBtn: {
     backgroundColor: "#ffb3ba",
