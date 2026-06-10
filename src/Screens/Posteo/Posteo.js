@@ -18,7 +18,7 @@ function CrearP(props) {
 
     return (
         <View style={styles.containerForm}>
-            <Text>Crear nuevo post</Text>
+            <Text style={styles.title}>Crear nuevo post</Text>
             <TextInput style={styles.inputStyle}
                 keyboardType="default"
                 placeholder="Escribe aqui tu comentario..."
@@ -32,31 +32,41 @@ function CrearP(props) {
 export default CrearP
 
 const styles = StyleSheet.create({
-    containerForm: {
-        paddingHorizontal: 10,
-        marginTop: 20
-    },
-    inputStyle: {
-        height: 20,
-        paddingVertical: 15,
-        paddingHorizontal: 10,
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderStyle: "solid",
-        borderRadius: 6,
-        marginVertical: 10
-    },
-     clickeable: {
-        backgroundColor: "#28a745",
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        textAlign: "center",
-        borderRadius: 4,
-        borderWidth: 1,
-        borderStyle: "solid",
-        borderColor: "#28a745"
-    },
-    textoBoton: {
-        color: "#fff"
-    }
+  containerForm: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 28,
+    backgroundColor: "#eef0fb"
+  },
+  inputStyle: {
+    backgroundColor: "#fff",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#b3b8e8",
+    marginBottom: 14,
+    fontSize: 15,
+    color: "#2d2b6b"
+  },
+  clickeable: {
+    backgroundColor: "#4f46e5",
+    padding: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 4,
+    marginBottom: 20
+  },
+  textoBoton: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16
+  },
+   title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 24,
+    color: "#2d2b6b"
+  },
 })
