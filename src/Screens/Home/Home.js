@@ -6,6 +6,7 @@ import firebase from "firebase";
 export default function Home({ navigation }) {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [username, setUsername] = useState("");
     const user = auth.currentUser;
 
     useEffect(() => {
@@ -22,6 +23,16 @@ export default function Home({ navigation }) {
                 setPosts(posts);
                 setLoading(false);
             })
+
+        db.collection("user")
+        .where("email", "==", user.email)
+        .get()
+        .then(snapshot => {
+            if (!snapshot.empty) {
+                setUsername(snapshot.docs[0].data().nombreUsuario);
+            }
+        });
+
     }, []);
 
     const toggleLike = (post) => {
@@ -58,7 +69,7 @@ export default function Home({ navigation }) {
             return (
                 <View style={styles.post}>
                     <Text style={styles.owner}>
-                        {item.data.owner} posteó el {new Date(item.data.createdAt).toLocaleDateString()}
+                        {username} posteó el {new Date(item.data.createdAt).toLocaleDateString()}
                     </Text>
                     <Text style={styles.description}>{item.data.descripcionPost}</Text>
                     {item.data.imageUrl ? (
