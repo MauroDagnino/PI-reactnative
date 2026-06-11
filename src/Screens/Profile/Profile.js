@@ -1,6 +1,8 @@
 import { Pressable, View, Text, StyleSheet, FlatList } from "react-native";
 import { auth, db } from "../../firebase/config";
 import { useEffect, useState } from "react";
+import firebase from "firebase";
+import Posts from "../../Components/Posts";
 
 export default function Profile({ navigation }) {
     const user = auth.currentUser;
@@ -31,6 +33,23 @@ export default function Profile({ navigation }) {
         });
     
     }, [])
+
+    const toggleLike = (post) => {
+        const likes = post.data.likes || [];
+        const alreadyLiked = likes.includes(user.email);
+    
+        db.collection('posts')
+            .doc(post.id)
+            .update({
+                likes: alreadyLiked
+                    ? firebase.firestore.FieldValue.arrayRemove(user.email)
+                    : firebase.firestore.FieldValue.arrayUnion(user.email)
+            })
+            .then(() => {
+                console.log("Like actualizado");
+            })
+    }
+
     const deletePost = (id) => {
         db.collection("posts")
             .doc(id)
@@ -45,28 +64,31 @@ export default function Profile({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <Text style={styles.title}>{username}</Text>
+            <Text style={styles.subtitle}>{user.email}</Text>
+            <Text style={styles.sectionTitle}>Últimos posteos:</Text>
+            {posts.length === 0 ? ( <Text>No has realizado ningún posteo aún.</Text> ) : (
+            <FlatList
+            data={posts}
+            keyExtractor={item => item.id}
+            style={{ width: "100%" }}
+            renderItem={({ item }) => {
+            const liked = (item.data.likes || []).includes(user.email);
+            return (
             <View>
-                <Text style={styles.title}>{username}</Text>
-                <Text style={styles.subtitle}>{user.email}</Text>
-                <Text style={styles.sectionTitle}>Últimos posteos:</Text>
-                {posts.length === 0 ? ( <Text>No has realizado ningún posteo aún.</Text> ) : (
-                <FlatList
-                    data={posts}
-                    keyExtractor={item => item.id}
-                    renderItem={({ item }) => (
-                        <View style={styles.post}>
-                            <Text style={styles.postOwner}>{username} posteo en {new Date(item.data.createdAt).toLocaleDateString()}</Text>
-                            <Text style={styles.postDescription}>{item.data.descripcionPost}</Text>
-                            <Pressable
-                                style={styles.deleteBtn}
-                                onPress={() => deletePost(item.id)}>
-                                <Text style={styles.deleteBtnText}>Eliminar</Text>
-                            </Pressable>
-                        </View>
-                    )}
-                /> )}
+                <Posts
+                    post={item}
+                    liked={liked}
+                    toggleLike={toggleLike}
+                    navigation={navigation}
+                    onDelete={deletePost}
+                />
             </View>
-
+            
+            );
+            }}
+            />
+        )}
             <Pressable
                     style={styles.button}
                     onPress={() => navigation.navigate("Login")}>
@@ -84,7 +106,6 @@ container: {
     paddingHorizontal: 20,
     paddingVertical: 30,
     backgroundColor: "#eef0fb",
-    justifyContent: "space-between",
     alignItems: "flex-start"
 },
 title: {
@@ -149,7 +170,7 @@ center: {
     borderRadius: 10,
     alignItems: "center",
     alignSelf: "center",
-    marginBottom: "13"
+    marginBottom: 13
   },
   buttonText: {
     color: "#e1e1e1ff",

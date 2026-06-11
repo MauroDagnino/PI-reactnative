@@ -2,11 +2,11 @@ import { View, Text, FlatList, Image, Pressable, StyleSheet, ActivityIndicator }
 import { useState, useEffect, Activity } from "react";
 import { auth, db } from "../../firebase/config";
 import firebase from "firebase";
+import Posts from "../../Components/Posts";
 
 export default function Home({ navigation }) {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [username, setUsername] = useState("");
     const user = auth.currentUser;
 
     useEffect(() => {
@@ -23,33 +23,23 @@ export default function Home({ navigation }) {
                 setPosts(posts);
                 setLoading(false);
             })
-
-        db.collection("user")
-        .where("email", "==", user.email)
-        .get()
-        .then(snapshot => {
-            if (!snapshot.empty) {
-                setUsername(snapshot.docs[0].data().nombreUsuario);
-            }
-        });
-
     }, []);
 
     const toggleLike = (post) => {
-    const likes = post.data.likes || [];
-    const alreadyLiked = likes.includes(user.email);
+        const likes = post.data.likes || [];
+        const alreadyLiked = likes.includes(user.email);
 
-    db.collection('posts')
-        .doc(post.id)
-        .update({
-            likes: alreadyLiked
-                ? firebase.firestore.FieldValue.arrayRemove(user.email)
-                : firebase.firestore.FieldValue.arrayUnion(user.email)
-        })
-        .then(() => {
-            console.log("Like actualizado");
-        })
-}
+        db.collection('posts')
+            .doc(post.id)
+            .update({
+                likes: alreadyLiked
+                    ? firebase.firestore.FieldValue.arrayRemove(user.email)
+                    : firebase.firestore.FieldValue.arrayUnion(user.email)
+            })
+            .then(() => {
+                console.log("Like actualizado");
+            })
+    }
     if (loading) {
         return (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -59,40 +49,25 @@ export default function Home({ navigation }) {
     }
     return (
     <View style={styles.flatlist}>
-    <Text style={styles.title}>Página de Inicio</Text>
-    <FlatList
+        <Text style={styles.title}>Página de Inicio</Text>
+        <FlatList
         data={posts}
         keyExtractor={item => item.id}
         style={styles.container}
         renderItem={({ item }) => {
             const liked = (item.data.likes || []).includes(user.email);
             return (
-                <View style={styles.post}>
-                    <Text style={styles.owner}>
-                        {username} posteó el {new Date(item.data.createdAt).toLocaleDateString()}
-                    </Text>
-                    <Text style={styles.description}>{item.data.descripcionPost}</Text>
-                    {item.data.imageUrl ? (
-                        <Image source={{ uri: item.data.imageUrl }} style={styles.image} />
-                    ) : null}
-                    <View style={styles.actions}>
-                        <Pressable onPress={() => toggleLike(item)} style={styles.likeBtn}>
-                            <Text style={styles.likeText}>
-                                {liked ? "❤️" : "🤍"} {(item.data.likes || []).length} likes
-                            </Text>
-                        </Pressable>
-                        <Pressable
-                            onPress={() => navigation.navigate("Comments", { postId: item.id })}
-                            style={styles.commentBtn}>
-                            <Text style={styles.commentText}>Comentar</Text>
-                        </Pressable>
-                    </View>
-                </View>
+                <Posts
+                    post={item}
+                    liked={liked}
+                    toggleLike={toggleLike}
+                    navigation={navigation}
+                />
             );
         }}
     />
     </View>
-); 
+    );
 }
 
 

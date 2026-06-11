@@ -7,6 +7,12 @@ function CrearP(props) {
     const [comentario, setComenatrio] = useState("")
 
     function Post() {
+        console.log('post body', {
+            owner: auth.currentUser.email,
+            descripcionPost: comentario,
+            createdAt: Date.now(),
+            likes: []
+        })
             db.collection("posts").add({
             owner: auth.currentUser.email,
             descripcionPost: comentario,
