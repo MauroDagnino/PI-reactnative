@@ -62,43 +62,45 @@ export default function Profile({ navigation }) {
             });
     }
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>{username}</Text>
-            <Text style={styles.subtitle}>{user.email}</Text>
-            <Text style={styles.sectionTitle}>Últimos posteos:</Text>
-            {posts.length === 0 ? ( <Text>No has realizado ningún posteo aún.</Text> ) : (
-            <FlatList
-            data={posts}
-            keyExtractor={item => item.id}
-            style={{ width: "100%" }}
-            renderItem={({ item }) => {
-            const liked = (item.data.likes || []).includes(user.email);
-            return (
-            <View>
-                <Posts
-                    post={item}
-                    liked={liked}
-                    toggleLike={toggleLike}
-                    navigation={navigation}
-                    onDelete={deletePost}
-                />
+return (
+    <View style={styles.container}>
+        <Text style={styles.title}>{username}</Text>
+        <Text style={styles.subtitle}>{user.email}</Text>
+        <Text style={styles.sectionTitle}>Últimos posteos:</Text>
+
+        {posts.length === 0 ? (
+            <View style={{ flex: 1 }}>
+                <Text>No has realizado ningún posteo aún.</Text>
             </View>
-            
-            );
-            }}
+        ) : (
+            <FlatList
+                data={posts}
+                keyExtractor={item => item.id}
+                style={{ flex: 1, width: "100%" }}
+                renderItem={({ item }) => {
+                    const liked = (item.data.likes || []).includes(user.email);
+                    return (
+                        <Posts
+                            post={item}
+                            liked={liked}
+                            toggleLike={toggleLike}
+                            navigation={navigation}
+                            onDelete={deletePost}
+                        />
+                    );
+                }}
             />
         )}
-            <Pressable
-                    style={styles.button}
-                    onPress={() => navigation.navigate("Login")}>
-                    <Text style={styles.buttonText}>
-                        Logout. Hacer click aquí te lleva al login.
-                    </Text>
-            </Pressable>
-        </View>
-    );
-}
+
+        <Pressable
+            style={styles.button}
+            onPress={() => navigation.navigate("Login")}>
+            <Text style={styles.buttonText}>
+                Logout. Hacer click aquí te lleva al login.
+            </Text>
+        </Pressable>
+    </View>
+); }
 
 const styles = StyleSheet.create({
 container: {
@@ -106,7 +108,11 @@ container: {
     paddingHorizontal: 20,
     paddingVertical: 30,
     backgroundColor: "#eef0fb",
-    alignItems: "flex-start"
+    justifyContent: "space-between"
+},
+content: {
+    flex: 1,
+    width: "100%"
 },
 title: {
     textTransform: "capitalize",
