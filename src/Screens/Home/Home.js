@@ -88,11 +88,12 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         padding: 16,
-        backgroundColor: "#f0f0f0",
+        backgroundColor: "#eef0fb",
     },
     flatlist: {
         width: "100%",
-        flex: 1
+        flex: 1,
+        backgroundColor: "#eef0fb"
     },
     title: {
         fontSize: 24,

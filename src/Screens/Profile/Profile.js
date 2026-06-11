@@ -45,11 +45,11 @@ export default function Profile({ navigation }) {
 
     return (
         <View style={styles.container}>
-            
-                <Text style={styles.title}>Mi Perfil</Text>
+            <View>
                 <Text style={styles.title}>{username}</Text>
                 <Text style={styles.subtitle}>{user.email}</Text>
                 <Text style={styles.sectionTitle}>Últimos posteos:</Text>
+                {posts.length === 0 ? ( <Text>No has realizado ningún posteo aún.</Text> ) : (
                 <FlatList
                     data={posts}
                     keyExtractor={item => item.id}
@@ -64,8 +64,9 @@ export default function Profile({ navigation }) {
                             </Pressable>
                         </View>
                     )}
-                />
-            
+                /> )}
+            </View>
+
             <Pressable
                     style={styles.button}
                     onPress={() => navigation.navigate("Login")}>
@@ -82,11 +83,12 @@ container: {
     flex: 1,
     paddingHorizontal: 20,
     paddingVertical: 30,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#eef0fb",
     justifyContent: "space-between",
     alignItems: "flex-start"
 },
 title: {
+    textTransform: "capitalize",
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 12,
@@ -107,8 +109,8 @@ center: {
     justifyContent: "center"
 },
   subtitle: {
-    fontSize: 14,
-    color: "#6b6aaa",
+    fontSize: 15,
+    color: "#616176ff",
     marginBottom: 16
 },
   post: {
@@ -147,7 +149,7 @@ center: {
     borderRadius: 10,
     alignItems: "center",
     alignSelf: "center",
-    marginBottom: 15
+    marginBottom: "13"
   },
   buttonText: {
     color: "#e1e1e1ff",
