@@ -10,10 +10,19 @@ import Entypo from '@expo/vector-icons/Entypo';
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 
-function HomeTabs() {
+function HomeStack() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Comments" component={Comentario} />
+        </Stack.Navigator>
+    )
+}
+
+export default function HomeMenu() {
     return (
         <Tab.Navigator screenOptions={{ headerShown: false }}>
-            <Tab.Screen name="Home" component={Home}
+            <Tab.Screen name="Home" component={HomeStack}
                 options={{ tabBarIcon: () => <FontAwesome name="home" size={24} color="black" /> }}
             />
             <Tab.Screen name="Posteo" component={Posteo}
@@ -23,14 +32,5 @@ function HomeTabs() {
                 options={{ tabBarIcon: () => <FontAwesome name="user" size={24} color="black" /> }}
             />
         </Tab.Navigator>
-    )
-}
-
-export default function HomeMenu() {
-    return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="HomeTabs" component={HomeTabs} />
-            <Stack.Screen name="Comments" component={Comentario} />
-        </Stack.Navigator>
     )
 }
